@@ -1,0 +1,4 @@
+#!/bin/bash
+source .venv/bin/activate
+docker build -t fastapi-app .
+docker run -p 8000:8000 fastapi-app
