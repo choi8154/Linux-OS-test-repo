@@ -1,4 +1,4 @@
-FROM python:3.13-slim
+FROM python:3.12-slim
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ RUN apt-get update && apt-get install -y curl build-essential && rm -rf /var/lib
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 
-ENV PATH="/root/.local/bin:$PATH"
+ENV PATH="/root/.local/bin:&PATH"
 
 COPY pyproject.toml uv.lock* /app/
 
