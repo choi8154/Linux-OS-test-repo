@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>OpenAI Response</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        h1 { color: #333; }
+        .response-box {
+            margin-top: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            white-space: pre-wrap;
+        }
+        .input-box {
+            margin-top: 20px;
+        }
+        input[type="text"] {
+            padding: 8px;
+            width: 300px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover { background-color: #45a049; }
+    </style>
+</head>
+<body>
+    <h1>OpenAI GPT Response 테스트</h1>
+
+    <div class="input-box">
+        <!-- GET 요청으로 text query parameter 보내기 -->
+        <form action="/item" method="get">
+            <input type="text" name="text" placeholder="프롬프트 입력" required>
+            <button type="submit">전송</button>
+        </form>
+    </div>
+
+    {% if response %}
+    <div class="response-box">
+        <strong>GPT 응답:</strong>
+        <p>{{ response }}</p>
+    </div>
+    {% endif %}
+</body>
+</html>
