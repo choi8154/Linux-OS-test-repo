@@ -1,55 +1,64 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
     <meta charset="UTF-8">
-    <title>OpenAI Response</title>
-    <style>
-        body { font-family: Arial, sans-serif; padding: 20px; }
-        h1 { color: #333; }
-        .response-box {
-            margin-top: 20px;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            background-color: #f9f9f9;
-            white-space: pre-wrap;
-        }
-        .input-box {
-            margin-top: 20px;
-        }
-        input[type="text"] {
-            padding: 8px;
-            width: 300px;
-            border-radius: 4px;
-            border: 1px solid #ccc;
-        }
-        button {
-            padding: 8px 12px;
-            border: none;
-            border-radius: 4px;
-            background-color: #4CAF50;
-            color: white;
-            cursor: pointer;
-        }
-        button:hover { background-color: #45a049; }
-    </style>
+    <title>AI Stream</title>
+
+    <!-- markdown-it -->
+    <script src="https://cdn.jsdelivr.net/npm/markdown-it/dist/markdown-it.min.js"></script>
+
+    <!-- highlight.js -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 </head>
 <body>
-    <h1>OpenAI GPT Response 테스트</h1>
 
-    <div class="input-box">
-        <!-- GET 요청으로 text query parameter 보내기 -->
-        <form action="/item" method="get">
-            <input type="text" name="text" placeholder="프롬프트 입력" required>
-            <button type="submit">전송</button>
-        </form>
-    </div>
+<input type="text" id="input" placeholder="질문 입력">
+<button onclick="ask()">전송</button>
 
-    {% if response %}
-    <div class="response-box">
-        <strong>GPT 응답:</strong>
-        <p>{{ response }}</p>
-    </div>
-    {% endif %}
+<hr>
+
+<div id="output"></div>
+
+<script>
+const md = window.markdownit({
+    html: true,
+    linkify: true,
+    typographer: true,
+    highlight: function (str, lang) {
+        if (lang && hljs.getLanguage(lang)) {
+            return '<pre><code class="hljs">' +
+                hljs.highlight(str, { language: lang }).value +
+                '</code></pre>';
+        }
+        return '<pre><code class="hljs">' +
+            md.utils.escapeHtml(str) +
+            '</code></pre>';
+    }
+});
+
+async function ask() {
+    const text = document.getElementById("input").value;
+    const output = document.getElementById("output");
+
+    output.innerHTML = "";
+    let accumulated = "";
+
+    const response = await fetch(`/stream?text=${encodeURIComponent(text)}`);
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        accumulated += decoder.decode(value);
+        output.innerHTML = md.render(accumulated);
+        hljs.highlightAll();
+    }
+}
+</script>
+
 </body>
 </html>
